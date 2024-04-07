@@ -7,8 +7,8 @@ from flask_login import login_required, current_user, LoginManager
 
 from cache import cache
 from config import Config
-from database import mongodb, sqlalchemy_db
 from modules.user.user import User
+from database import mongodb, sqlalchemy_db
 
 from modules.user.user_login import UserLogin
 from modules.user.user_logout import UserLogout
@@ -61,7 +61,7 @@ def health():
     return "OK"
 
 
-@app.route("/index")
+@app.route("/")
 def index():
     return render_template("index.html", current_user=current_user)
 
@@ -69,12 +69,17 @@ def index():
 @app.route("/profile")
 @login_required
 def profile():
-    return render_template("profile.html", name=current_user.name)
+    return render_template("profile.html", name=current_user.first_name)
 
 
-@app.route("/")
-def hello():
-    return "Welcome to Shifter ;)"
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+
+@app.route("/login")
+def login():
+    return render_template("login.html")
 
 
 @login_manager.user_loader
@@ -82,11 +87,15 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
+with app.app_context():
+    sqlalchemy_db.create_all()
+
+
 api.add_resource(RequestsFeedController, "/requests_feed")
 api.add_resource(TradeRequestController, "/trade_request")
-api.add_resource(UserLogin, "/auth/login")
-api.add_resource(UserSignup, "/auth/signup")
-api.add_resource(UserLogout, "/auth/logout")
+api.add_resource(UserLogin, "/login")
+api.add_resource(UserSignup, "/signup")
+api.add_resource(UserLogout, "/logout")
 
 
 if __name__ == "__main__":

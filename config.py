@@ -1,4 +1,9 @@
+import os
+
+
 class Config:
+    SECRET_KEY = os.urandom(24)
+
     MONGO_URI = (
         "mongodb+srv://erannir94:4KeXw3Y9gWKogJjL@cluster0.or4yrkc.mongodb.net/Shifter"
     )

@@ -19,7 +19,7 @@ class UserLogin(Resource):
 
         if not user or not check_password_hash(user.password, password):
             flash("Please check your login details and try again.")
-            return redirect("/auth/login")
+            return redirect("/login")
 
         if current_user.is_authenticated:
             # If user is already authenticated, redirect to profile

@@ -1,5 +1,3 @@
-# tests/test_trade_request_controller.py
-
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient

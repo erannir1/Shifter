@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask_login import current_user
 from werkzeug.security import generate_password_hash
-from flask import request, flash, redirect, url_for, render_template
+from flask import request, flash, redirect, render_template
 
 from database import sqlalchemy_db
 from modules.user.user import User
@@ -22,16 +22,16 @@ class UserSignup(Resource):
 
         if user:
             flash("Email address already exists")
-            return redirect("auth/signup")
+            return redirect("signup")
 
         new_user = User(
             email=email,
             first_name=first_name,
             last_name=last_name,
-            password=generate_password_hash(password, method="sha256"),
+            password=generate_password_hash(password, method="pbkdf2:sha256"),
             company=company,
         )
         sqlalchemy_db.session.add(new_user)
         sqlalchemy_db.session.commit()
 
-        return redirect(url_for("auth.login"))
+        return redirect("/login")
