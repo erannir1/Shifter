@@ -1,15 +1,12 @@
-from typing import Type
-from pydantic import BaseModel, Field
+from database import sqlalchemy_db
 
 
-class User(BaseModel):
-    email: str
-    password: str
-    company: str
-
-    @classmethod
-    def add_field(cls, field_name: str, field_type: Type, description: str):
-        if not hasattr(cls, field_name):
-            setattr(
-                cls, field_name, Field(None, description=description, type=field_type)
-            )
+class User(sqlalchemy_db.Model):
+    _id = sqlalchemy_db.Column(
+        sqlalchemy_db.Integer, primary_key=True
+    )  # primary keys are required by SQLAlchemy
+    email = sqlalchemy_db.Column(sqlalchemy_db.String(100), unique=True)
+    password = sqlalchemy_db.Column(sqlalchemy_db.String(100))
+    first_name = sqlalchemy_db.Column(sqlalchemy_db.String(100))
+    last_name = sqlalchemy_db.Column(sqlalchemy_db.String(100))
+    company = sqlalchemy_db.Column(sqlalchemy_db.String(100))

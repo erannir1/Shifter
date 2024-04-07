@@ -33,7 +33,10 @@ class RequestsFeedController(Resource):
             skip = (page - 1) * page_size
 
             # Retrieve documents for the current page
-            trade_requests = list(self.collection.find().skip(skip).limit(page_size))
+            projection = {"_id": False}
+            trade_requests = list(
+                self.collection.find({}, projection).skip(skip).limit(page_size)
+            )
 
             # If no documents are found, return an empty list
             if not trade_requests:
