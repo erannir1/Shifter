@@ -11,6 +11,7 @@ class User(sqlalchemy_db.Model, UserMixin):
     password = sqlalchemy_db.Column(sqlalchemy_db.String(100))
     first_name = sqlalchemy_db.Column(sqlalchemy_db.String(100))
     last_name = sqlalchemy_db.Column(sqlalchemy_db.String(100))
+    role = sqlalchemy_db.Column(sqlalchemy_db.String(100))
     company = sqlalchemy_db.Column(sqlalchemy_db.String(100))
 
     def get_id(self):

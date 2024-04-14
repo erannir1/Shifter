@@ -1,6 +1,7 @@
-from flask import abort
 from pydantic import ValidationError
 from flask_restful import reqparse, Resource
+from flask import abort, render_template, request
+from flask_login import current_user, login_required
 
 from modules.shift.shift import Shift
 from database import mongodb, MongoCollections
@@ -11,32 +12,14 @@ from modules.trade_request.trade_request import TradeRequest
 class TradeRequestController(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument(
-            "company", type=str, required=True, help="Company name required"
-        )
-        self.parser.add_argument(
-            "role",
-            type=str,
-            required=True,
-            help="Role required",
-        )
-        self.parser.add_argument(
-            "exchanging_shifts",
-            type=dict,
-            required=True,
-            action="append",
-            help="Exchanging shifts data required",
-        )
-        self.parser.add_argument(
-            "receiving_shifts",
-            type=dict,
-            default=None,
-            action="append",
-            help="Receiving shifts data",
-        )
         self.collection = getattr(
             mongodb.db, MongoCollections.TRADE_REQUESTS_COLLECTION
         )
+
+    @login_required
+    def get(self):
+
+        return render_template("create_request.html")
 
     def parse_shifts(self, shifts_data):
         shifts = []
@@ -54,21 +37,23 @@ class TradeRequestController(Resource):
                 )
         return shifts
 
-    def put(self):
+    @login_required
+    def post(self):
+
         try:
-            # Parse request arguments
-            args = self.parser.parse_args()
+            role: str = current_user.role
+            company: str = current_user.company
 
-            # Parse exchanging shifts
-            exchanging_shifts = self.parse_shifts(args["exchanging_shifts"])
+            exchanging_shifts_data = request.form.getlist("exchanging_shifts")
+            receiving_shifts_data = request.form.getlist("receiving_shifts")
 
-            # Parse receiving shifts if available
-            receiving_shifts = self.parse_shifts(args.get("receiving_shifts", []))
+            exchanging_shifts = self.parse_shifts(exchanging_shifts_data)
+            receiving_shifts = self.parse_shifts(receiving_shifts_data)
 
             # Validate and create TradeRequest object
             trade_request = TradeRequest(
-                company=args["company"],
-                role=args["role"],
+                company=company,
+                role=role,
                 exchanging_shifts=exchanging_shifts,
                 receiving_shifts=receiving_shifts,
             )
