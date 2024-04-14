@@ -68,3 +68,4 @@ class TradeRequestController(Resource):
                 500,
                 description=message_formatter(f"Internal Server Error: {str(e)}", 500),
             )
+
